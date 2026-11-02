@@ -1,6 +1,6 @@
 # FINANCLI
 
-> CONTROLE DE DESPESAS PESSOAIS VIA LINHA DE COMANDO — SIMPLES, RÁPIDO E SEM DEPENDENCIAS EXTERNAS.
+> CONTROLE DE DESPESAS PESSOAIS VIA LINHA DE COMANDO — SIMPLES, RÁPIDO E SEM CADASTRO OU INFRAESTRUTURA EXTERNA.
 
 [![CI](https://github.com/CarlosEduardoBorges/bootcamp/actions/workflows/ci.yml/badge.svg)](https://github.com/CarlosEduardoBorges/bootcamp/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/badge/version-1.1.0-blue)
