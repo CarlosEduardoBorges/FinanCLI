@@ -14,6 +14,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 @Component
@@ -254,12 +255,13 @@ public class MenuCLI implements CommandLineRunner {
 
     private void exibirCotacoes() {
         System.out.println("\n=== COTAÇÕES DO DIA ===");
-        CotacaoResponse cotacoes = cotacaoService.buscarCotacoes();
-        if (cotacoes == null) {
+        Optional<CotacaoResponse> resposta = cotacaoService.buscarCotacoes();
+        if (resposta.isEmpty()) {
             System.out.println(YELLOW + "Não foi possível "
                 + "obter cotações. Verifique sua conexão." + RESET);
             return;
         }
+        CotacaoResponse cotacoes = resposta.get();
         if (cotacoes.usdBrl() != null) {
             System.out.printf("Dólar (USD): R$ %s%n",
                 cotacoes.usdBrl().bid());
