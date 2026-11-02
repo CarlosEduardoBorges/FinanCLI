@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {"cotacao.api.url=http://localhost:9876/json/last/USD-BRL,EUR-BRL"})
@@ -49,12 +51,24 @@ class CotacaoServiceIntegrationTest {
                 )
         );
 
-        CotacaoResponse resposta = cotacaoService.buscarCotacoes();
+        Optional<CotacaoResponse> resultado = cotacaoService.buscarCotacoes();
 
-        assertThat(resposta).isNotNull();
+        assertThat(resultado).isPresent();
+        CotacaoResponse resposta = resultado.get();
         assertThat(resposta.usdBrl()).isNotNull();
         assertThat(resposta.eurBrl()).isNotNull();
         assertThat(Double.parseDouble(resposta.usdBrl().bid())).isGreaterThan(0.0);
         assertThat(Double.parseDouble(resposta.eurBrl().bid())).isGreaterThan(0.0);
+    }
+
+    @Test
+    void deveRetornarVazioQuandoApiFalhar() {
+        wireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/json/last/USD-BRL,EUR-BRL"))
+                .willReturn(WireMock.aResponse().withStatus(500))
+        );
+
+        Optional<CotacaoResponse> resultado = cotacaoService.buscarCotacoes();
+
+        assertThat(resultado).isEmpty();
     }
 }

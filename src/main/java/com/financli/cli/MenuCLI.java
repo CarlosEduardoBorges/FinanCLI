@@ -5,6 +5,7 @@ import com.financli.model.CotacaoResponse;
 import com.financli.model.Despesa;
 import com.financli.service.CotacaoService;
 import com.financli.service.DespesaService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 @Component
@@ -31,10 +33,13 @@ public class MenuCLI implements CommandLineRunner {
     private final CotacaoService cotacaoService;
     private final Scanner scanner = new Scanner(System.in);
     private final NumberFormat moeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    private final String versao;
 
-    public MenuCLI(DespesaService service, CotacaoService cotacaoService) {
+    public MenuCLI(DespesaService service, CotacaoService cotacaoService,
+                   @Value("${spring.application.version:dev}") String versao) {
         this.service = service;
         this.cotacaoService = cotacaoService;
+        this.versao = versao;
     }
 
     @Override
@@ -62,7 +67,7 @@ public class MenuCLI implements CommandLineRunner {
 
     private void exibirBoasVindas() {
         System.out.println(BOLD + "\n========================================" + RESET);
-        System.out.println(BOLD + "   Bem-vindo ao FinanCLI v1.0.0" + RESET);
+        System.out.println(BOLD + "   Bem-vindo ao FinanCLI v" + versao + RESET);
         System.out.println(BOLD + "   Seu controle de gastos pessoais" + RESET);
         System.out.println(BOLD + "========================================" + RESET);
     }
@@ -254,12 +259,13 @@ public class MenuCLI implements CommandLineRunner {
 
     private void exibirCotacoes() {
         System.out.println("\n=== COTAÇÕES DO DIA ===");
-        CotacaoResponse cotacoes = cotacaoService.buscarCotacoes();
-        if (cotacoes == null) {
+        Optional<CotacaoResponse> resposta = cotacaoService.buscarCotacoes();
+        if (resposta.isEmpty()) {
             System.out.println(YELLOW + "Não foi possível "
                 + "obter cotações. Verifique sua conexão." + RESET);
             return;
         }
+        CotacaoResponse cotacoes = resposta.get();
         if (cotacoes.usdBrl() != null) {
             System.out.printf("Dólar (USD): R$ %s%n",
                 cotacoes.usdBrl().bid());
