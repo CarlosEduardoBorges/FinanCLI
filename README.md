@@ -58,7 +58,8 @@ O **FinanCLI** é uma aplicação de linha de comando desenvolvida para tornar o
 - Oferece filtragem por categoria para identificar onde mais se gasta;
 - Gera um resumo financeiro com total geral e subtotal por categoria;
 - Persiste os dados localmente via banco H2 em arquivo, mantendo o histórico entre sessões;
-- Não exige internet, cadastro ou infraestrutura externa — basta ter Java instalado.
+- Consulta as cotações de dólar e euro em tempo real (via AwesomeAPI), e é a única funcionalidade que depende de internet — o controle de despesas funciona totalmente offline;
+- Não exige cadastro nem infraestrutura externa — basta ter Java instalado.
 
 ---
 
@@ -98,7 +99,7 @@ Jovens e adultos que desejam iniciar um controle financeiro simples, sem depende
 | Spring Boot Test | — | Contexto de testes com H2 em memória |
 | WireMock | 3.9.1 | Mock HTTP para testes de integração |
 | Checkstyle | 3.3.1 | Análise estática / linting |
-| Maven | 3.9.14 | Gerenciamento de build e dependências |
+| Maven (via Maven Wrapper) | 3.9.14 | Gerenciamento de build e dependências |
 | Docker | — | Containerização para deploy em nuvem |
 | GitHub Actions | — | Pipeline de CI |
 
@@ -107,10 +108,11 @@ Jovens e adultos que desejam iniciar um controle financeiro simples, sem depende
 ## ESTRUTURA DO PROJETO
 
 ```
-financli/
+bootcamp/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                        # Pipeline de CI
+├── .mvn/wrapper/                         # Configuração do Maven Wrapper
 ├── Dockerfile                            # Multi-stage build para deploy
 ├── src/
 │   ├── main/
@@ -137,7 +139,10 @@ financli/
 │       │       └── CotacaoServiceIntegrationTest.java  # Teste de integração (WireMock)
 │       └── resources/
 │           └── application-test.yaml
-├── checkstyle.xml
+├── CHANGELOG.md                          # Histórico de versões
+├── LICENSE                               # Licença MIT
+├── checkstyle.xml                        # Regras do Checkstyle
+├── mvnw / mvnw.cmd                       # Maven Wrapper (Linux/macOS e Windows)
 ├── pom.xml
 └── README.md
 ```
@@ -148,16 +153,18 @@ financli/
 
 ```
 - Java 21
-- Maven 3.6 ou superior instalado (ou usar o `mvnw` incluso no projeto)
 - Git (realizar os comandos git)
+- Maven NÃO precisa estar instalado: o projeto inclui o Maven Wrapper (`mvnw`),
+  que baixa a versão correta (3.9.14) na primeira execução, exigindo internet
 ```
 
-PARA VERIFICAR AS VERSÕES INSTALADAS:
+PARA VERIFICAR A VERSÃO DO JAVA INSTALADA:
 
 ```bash
 java -version
-mvn -version
 ```
+
+> NOS COMANDOS ABAIXO, USE `./mvnw` NO LINUX/MACOS E `mvnw.cmd` NO WINDOWS. SE PREFERIR, É POSSÍVEL USAR UM MAVEN 3.6+ JÁ INSTALADO, TROCANDO `./mvnw` POR `mvn`.
 
 ---
 
@@ -171,7 +178,7 @@ git clone https://github.com/CarlosEduardoBorges/bootcamp.git
 cd bootcamp
 
 # 3. COMPILE O PROJETO
-mvn compile
+./mvnw compile
 ```
 
 ---
@@ -179,7 +186,7 @@ mvn compile
 ## COMO EXECUTAR
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 O MENU INTERATIVO SERÁ EXIBIDO DIRETAMENTE NO TERMINAL:
@@ -211,26 +218,27 @@ Escolha uma opção:
 ## COMO RODAR OS TESTES
 
 ```bash
-mvn test
+./mvnw test
 ```
 
-A SUÍTE POSSUI **9 TESTES AUTOMATIZADOS** COBRINDO QUATRO CENÁRIOS:
+A SUÍTE POSSUI **10 TESTES AUTOMATIZADOS** COBRINDO CINCO CENÁRIOS:
 
 | CENÁRIO | TESTES |
 |---|---|
 | Caminho feliz | Adicionar despesa válida, calcular total geral, filtrar por categoria, total zero sem despesas |
 | Entrada inválida | Rejeitar valor negativo, rejeitar descrição vazia (incluindo espaços em branco) |
 | Caso limite | Retornar `false` ao tentar remover ID inexistente |
-| Integração | Validar consumo da AwesomeAPI com mock WireMock |
+| Integração | Validar consumo da AwesomeAPI com mock WireMock e retorno vazio (`Optional.empty()`) quando a API responde com erro |
+| Contexto | Carregar o contexto do Spring Boot com o perfil `test` |
 
-OS TESTES UTILIZAM H2 EM MEMÓRIA COM PERFIL `test`, GARANTINDO ISOLAMENTO TOTAL DO BANCO DE PRODUÇÃO.
+OS TESTES UTILIZAM H2 EM MEMÓRIA COM PERFIL `test`, GARANTINDO ISOLAMENTO TOTAL DO BANCO DE PRODUÇÃO. A API DE COTAÇÕES É SIMULADA PELO WIREMOCK, ENTÃO OS TESTES NÃO DEPENDEM DE INTERNET.
 
 ---
 
 ## COMO RODAR O LINT
 
 ```bash
-mvn checkstyle:check
+./mvnw checkstyle:check
 ```
 
 O PROJETO UTILIZA **CHECKSTYLE 3.3.1** COM REGRAS PERSONALIZADAS DEFINIDAS EM `checkstyle.xml`. AS VERIFICAÇÕES INCLUEM: IMPORTS NÃO UTILIZADOS, STAR IMPORTS, USO OBRIGATÓRIO DE CHAVES EM BLOCOS, ESPAÇAMENTO AO REDOR DE OPERADORES, CONVENÇÕES DE NOMENCLATURA E TAMANHO MÁXIMO DE ARQUIVO.
@@ -238,7 +246,7 @@ O PROJETO UTILIZA **CHECKSTYLE 3.3.1** COM REGRAS PERSONALIZADAS DEFINIDAS EM `c
 PARA GERAR O RELATÓRIO HTML COMPLETO SEM INTERROMPER O BUILD:
 
 ```bash
-mvn checkstyle:checkstyle
+./mvnw checkstyle:checkstyle
 ```
 
 O RELATÓRIO SERÁ GERADO EM `target/site/checkstyle.html`.
@@ -289,6 +297,18 @@ Despesa registrada com sucesso! ID: 1
 | TOTAL GERAL    | R$ 40,00 |
 +----------------+----------+
 ```
+
+**Cotações do dia (opção 6, valores ilustrativos):**
+
+```
+Escolha uma opção: 6
+
+=== COTAÇÕES DO DIA ===
+Dólar (USD): R$ 5.75
+Euro  (EUR): R$ 6.20
+```
+
+SEM CONEXÃO COM A INTERNET, A APLICAÇÃO NÃO QUEBRA: EXIBE A MENSAGEM `Não foi possível obter cotações. Verifique sua conexão.` E VOLTA AO MENU.
 
 ---
 
