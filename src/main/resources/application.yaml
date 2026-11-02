@@ -1,6 +1,8 @@
 spring:
   application:
     name: financli
+    # Preenchido pelo Maven no build a partir de <version> do pom.xml
+    version: "@project.version@"
 
   datasource:
     url: jdbc:h2:file:./data/financli
