@@ -7,6 +7,23 @@ e este projeto adota o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ---
 
+## [1.1.1] - 2026-11-02
+
+### Adicionado
+- Teste de integração que valida o retorno vazio quando a AwesomeAPI responde com erro (10 testes no total)
+
+### Modificado
+- `CotacaoService.buscarCotacoes()` passa a retornar `Optional<CotacaoResponse>` e registrar a falha em log, em vez de retornar `null` silenciosamente
+- Pipeline de CI passa a executar `./mvnw`, garantindo a mesma versão do Maven em qualquer ambiente
+- README atualizado: contagem de testes, uso do Maven Wrapper, estrutura do projeto, exemplo da opção 6 e esclarecimento de que apenas as cotações dependem de internet
+
+### Corrigido
+- Banner de boas-vindas exibia sempre `v1.0.0`; agora lê a versão declarada no `pom.xml`
+- Espaço em branco no final do `artifactId` no `pom.xml`
+- `mvnw` versionado sem permissão de execução, o que impediria seu uso no CI
+
+---
+
 ## [1.1.0] - 2026-05-17
 
 ### Adicionado
@@ -52,5 +69,6 @@ e este projeto adota o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ---
 
+[1.1.1]: https://github.com/CarlosEduardoBorges/bootcamp/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/CarlosEduardoBorges/bootcamp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/CarlosEduardoBorges/bootcamp/releases/tag/v1.0.0

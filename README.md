@@ -3,7 +3,7 @@
 > CONTROLE DE DESPESAS PESSOAIS VIA LINHA DE COMANDO — SIMPLES, RÁPIDO E SEM CADASTRO OU INFRAESTRUTURA EXTERNA.
 
 [![CI](https://github.com/CarlosEduardoBorges/bootcamp/actions/workflows/ci.yml/badge.svg)](https://github.com/CarlosEduardoBorges/bootcamp/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.1-blue)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -193,7 +193,7 @@ O MENU INTERATIVO SERÁ EXIBIDO DIRETAMENTE NO TERMINAL:
 
 ```
 ========================================
-   Bem-vindo ao FinanCLI v1.1.0
+   Bem-vindo ao FinanCLI v1.1.1
    Seu controle de gastos pessoais
 ========================================
 
@@ -314,6 +314,8 @@ SEM CONEXÃO COM A INTERNET, A APLICAÇÃO NÃO QUEBRA: EXIBE A MENSAGEM `Não f
 
 ## VERSÃO
 
+**1.1.1** — Correções e refinamentos sem novas funcionalidades: versão exibida no banner passa a vir do `pom.xml`, falha na consulta de cotações registrada em log e tratada com `Optional`, `artifactId` corrigido, CI executando pelo Maven Wrapper, novo teste para falha da API (10 testes) e README atualizado.
+
 **1.1.0** — Integração com a AwesomeAPI para consulta de cotações USD-BRL e EUR-BRL (opção 6 do menu), teste de integração com WireMock, containerização via Docker com multi-stage build e deploy no Render.com.
 
 **1.0.0** — Versão inicial com funcionalidades CRUD completas, interface tabular colorida, 7 testes automatizados, Checkstyle e pipeline CI/CD via GitHub Actions.
@@ -321,7 +323,7 @@ SEM CONEXÃO COM A INTERNET, A APLICAÇÃO NÃO QUEBRA: EXIBE A MENSAGEM `Não f
 O versionamento segue o padrão **MAJOR.MINOR.PATCH** (Semantic Versioning). A versão está declarada no `pom.xml`:
 
 ```xml
-<version>1.1.0</version>
+<version>1.1.1</version>
 ```
 
 ---
